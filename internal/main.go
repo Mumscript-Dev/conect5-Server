@@ -14,7 +14,8 @@ type config struct {
 	env string
 }
 
-type application struct {
+type application struct 
+	{
 	config config	
 	infoLog *log.Logger 
 	errorLog *log.Logger

@@ -1,4 +1,5 @@
-module example/connect5Server
+module github/huifang719/cone
+ct-5-chat-server
 
 go 1.21.3
 
