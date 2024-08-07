@@ -59,11 +59,11 @@ func (app *application) ChatHandler(w http.ResponseWriter, r *http.Request) {
 				app.errorLog.Println("Error reading json.", err)
 				break
 		}
-		app.infoLog.Printf("Received message: %s", msg.Message)
+		app.infoLog.Printf("Received message: %s from  %s", msg.Message, msg.User)
 
 		// Optionally, send a response back to the client
-		response.Message = fmt.Sprintf("Message received: %s", msg.Message)
-		err = ws.WriteJSON(response)
+
+		err = ws.WriteJSON(msg)
 		if err != nil {
 				app.errorLog.Println(err)
 				break
