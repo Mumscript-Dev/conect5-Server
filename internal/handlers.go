@@ -23,8 +23,8 @@ type Game struct {
 var currentGame = &Game{}
 type WsJsonResponse struct {
 	Message string `json:"message"`
-	Action string `json:"action"`
-	MessageType string `json:"message_type"`
+	Profile int `json:"profile"`
+	User string `json:"user"`
 }
 
 func (app *application) Home(w http.ResponseWriter, r *http.Request) {
