@@ -42,7 +42,6 @@ func (app *application) ChatHandler(w http.ResponseWriter, r *http.Request) {
 		app.errorLog.Println(err)
 		return
 	}
-
 	var response WsJsonResponse
 	response.Profile = 0
 	response.Message = "Connected to server"
@@ -69,7 +68,7 @@ func (app *application) ChatHandler(w http.ResponseWriter, r *http.Request) {
 				break
 		}
 }
-	defer ws.Close()
+	// defer ws.Close()
 }
 
 func (app *application) GameHandler(w http.ResponseWriter, r *http.Request) {
@@ -129,6 +128,4 @@ func (app *application) GameHandler(w http.ResponseWriter, r *http.Request) {
 			app.infoLog.Println("Waiting for the other player to connect")
 		}
 	}
-
-
 }
