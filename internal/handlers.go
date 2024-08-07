@@ -44,8 +44,9 @@ func (app *application) ChatHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var response WsJsonResponse
+	response.Profile = 0
 	response.Message = "Connected to server"
-	response.Action = "2,3"
+	response.User = "Server"
 	err = ws.WriteJSON(response)
 	if err != nil {
 		app.errorLog.Println(err)
