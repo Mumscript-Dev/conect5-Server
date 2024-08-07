@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
-
+	"sync"
 	"github.com/gorilla/websocket"
 )
 
@@ -20,6 +20,7 @@ type Game struct {
 	Player2 *websocket.Conn
 	Mux     sync.Mutex
 }
+var currentGame = &Game{}
 type WsJsonResponse struct {
 	Message string `json:"message"`
 	Action string `json:"action"`
@@ -128,5 +129,5 @@ func (app *application) GameHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	
+
 }
