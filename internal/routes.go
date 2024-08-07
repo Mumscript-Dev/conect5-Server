@@ -11,5 +11,6 @@ func (app *application) routes() http.Handler {
 	mux.Get("/", app.Home)
 	mux.Get("/user", app.UserHandler)
 	mux.Get("/chat", app.ChatHandler)
+	mux.Get("/game", app.GameHandler)
 	return mux
 }
