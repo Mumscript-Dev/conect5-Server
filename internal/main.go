@@ -30,6 +30,7 @@ func (app *application) serve() error {
 		ReadTimeout: 10 * time.Second,
 		WriteTimeout: 5 * time.Second,
 		ReadHeaderTimeout: 5 * time.Second,
+
 	}
 	app.infoLog.Printf("Starting %s server on %d", app.config.env, app.config.port)	
 	return srv.ListenAndServe()	
@@ -50,7 +51,9 @@ func main() {
 		errorLog: errorLog,
 		version: "1.0.0",
 	}
-
+	
+	//starting channel to listen for websocket messages
+	go ListenForWsChan()
 	//starting the server	
 	err:= app.serve()	
 	if err != nil {
@@ -58,6 +61,4 @@ func main() {
 		log.Fatal(err)
 	}
 
-	//starting channel to listen for websocket messages
-	go ListenToWsChan()
 }

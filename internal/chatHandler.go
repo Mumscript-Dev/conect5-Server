@@ -19,7 +19,7 @@ type websocketConnection struct {
 	*websocket.Conn
 }
 
-var wsChan = make(chan WsPayload)
+var wsChan = make(chan WsPayload, 100)
 
 var clients = make(map[websocketConnection]string)
 
@@ -54,39 +54,41 @@ func (app *application) ChatHandler(w http.ResponseWriter, r *http.Request) {
 	conn := websocketConnection{Conn: ws}
 	clients[conn] = ""
 
-	go ListenForWs(&conn)
+	go app.ListenForWs(&conn)
 }
 
-func ListenForWs(conn *websocketConnection) {
+func(app *application) ListenForWs(conn *websocketConnection) {
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Println("Error in connection")
+			app.errorLog.Printf("Websocket connection error: %v", r)
 		}
 	}()
 	var payload WsPayload
 	for {
 		err := conn.ReadJSON(&payload)
 		if err != nil {
-			fmt.Println("Error in reading message")
+			app.errorLog.Printf("app can read payload because %v", err)
 			return
 		}
+		app.infoLog.Printf("%v send : %v ", payload.User, payload.Message )
 		payload.Conn = *conn
 		wsChan <- payload
 	}
 }
 
-func ListenToWsChan() {
+func ListenForWsChan() {
 	var response WsJsonResponse
+	fmt.Println("Listening to websocket channel")
 	for {
 		e := <-wsChan
 		response.Message = e.Message
 		response.User = e.User
 		response.Profile = e.Profile
-		broadcastMessage(response)
+BroadcastMessage(response)
 	}
 }
 
-func broadcastMessage(response WsJsonResponse) {
+func BroadcastMessage(response WsJsonResponse) {
 	for client := range clients {
 		err := client.WriteJSON(response)
 		if err != nil {
