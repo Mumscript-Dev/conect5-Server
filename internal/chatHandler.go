@@ -77,20 +77,22 @@ func ListenForWs(conn *websocketConnection) {
 
 func ListenToWsChan() {
 	var response WsJsonResponse
-
- 
 	for {
 		e := <-wsChan
 		response.Message = e.Message
 		response.User = e.User
 		response.Profile = e.Profile
-		for client := range clients {
-			err := client.WriteJSON(response)
-			if err != nil {
-				fmt.Println("Error in writing message")
-				client.Close()
-				delete(clients, client)
-			}
+		broadcastMessage(response)
+	}
+}
+
+func broadcastMessage(response WsJsonResponse) {
+	for client := range clients {
+		err := client.WriteJSON(response)
+		if err != nil {
+			fmt.Println("Error in writing message")
+			client.Close()
+			delete(clients, client)
 		}
 	}
 }

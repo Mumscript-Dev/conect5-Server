@@ -57,4 +57,7 @@ func main() {
 		app.errorLog.Println(err)
 		log.Fatal(err)
 	}
+
+	//starting channel to listen for websocket messages
+	go ListenToWsChan()
 }
