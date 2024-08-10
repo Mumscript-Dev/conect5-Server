@@ -28,6 +28,8 @@ type WsJsonResponse struct {
 	Message string `json:"message"`
 	Profile int `json:"profile"`
 	User string `json:"user"`
+	UserList []string `json:"userList"`
+	Action string `json:"action"`
 }
 type WsPayload struct {
 	Message string `json:"message"`
@@ -52,9 +54,14 @@ func (app *application) ChatHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		app.errorLog.Println(err)
 	}
-
+	var payload WsPayload
+	err = ws.ReadJSON(&payload)
+		if err != nil {
+			app.errorLog.Printf("app can read payload because %v", err)
+			return
+		}
 	conn := websocketConnection{Conn: ws}
-	clients[conn] = ""
+	clients[conn] = payload.User
 
 	go app.ListenForWs(&conn)
 }
@@ -83,23 +90,44 @@ func ListenForWsChan() {
 	fmt.Println("Listening to websocket channel")
 	for {
 		e := <-wsChan
-
 		switch e.Action {
 		case "join":
 			clients[e.Conn] = e.User
 			response.User = "Server"
 			response.Message = e.User + " has joined the chat"
 			response.Profile = 0
+			response.Action = "join"
 			BroadcastMessage(response)
 		case "chat":	
 			response.Message = e.Message
 			response.User = e.User
 			response.Profile = e.Profile
+			response.Action = "chat"
 			BroadcastMessage(response)
+		case "userList":
+			userList := getUserList()
+			response.Message = fmt.Sprintf("Users in chat: %v", userList)
+			response.User = e.User
+			response.UserList = userList
+			response.Profile = 0
+			response.Action = "userList"
+			BroadToUser(response)
 		}
 	}
 }
 
+func BroadToUser(response WsJsonResponse) {
+	for client := range clients {
+		if clients[client] == response.User {
+			err := client.WriteJSON(response)
+			if err != nil {
+				fmt.Println("Error in writing message")
+				client.Close()
+				delete(clients, client)
+			}
+		}
+	}
+}
 func BroadcastMessage(response WsJsonResponse) {
 	for client := range clients {
 		err := client.WriteJSON(response)
