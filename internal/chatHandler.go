@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"sort"
 
 	"github.com/gorilla/websocket"
 )
@@ -32,6 +33,7 @@ type WsPayload struct {
 	Message string `json:"message"`
 	User string `json:"user"`
 	Profile int `json:"profile"`
+	Action string `json:"action"`
 	Conn websocketConnection `json:"-"`
 }
 func (app *application) ChatHandler(w http.ResponseWriter, r *http.Request) {
@@ -81,10 +83,20 @@ func ListenForWsChan() {
 	fmt.Println("Listening to websocket channel")
 	for {
 		e := <-wsChan
-		response.Message = e.Message
-		response.User = e.User
-		response.Profile = e.Profile
-BroadcastMessage(response)
+
+		switch e.Action {
+		case "join":
+			clients[e.Conn] = e.User
+			response.User = "Server"
+			response.Message = e.User + " has joined the chat"
+			response.Profile = 0
+			BroadcastMessage(response)
+		case "chat":	
+			response.Message = e.Message
+			response.User = e.User
+			response.Profile = e.Profile
+			BroadcastMessage(response)
+		}
 	}
 }
 
@@ -97,4 +109,13 @@ func BroadcastMessage(response WsJsonResponse) {
 			delete(clients, client)
 		}
 	}
+}
+
+func getUserList() []string {
+	var userList []string
+	for _, x := range clients {
+		userList = append(userList, x)
+	}
+	sort.Strings(userList)
+	return userList
 }
