@@ -121,7 +121,7 @@ func BroadToUser(response WsJsonResponse) {
 		if clients[client] == response.User {
 			err := client.WriteJSON(response)
 			if err != nil {
-				fmt.Println("Error in writing message")
+				fmt.Printf("Error in writing message to user %v", response.User)
 				client.Close()
 				delete(clients, client)
 			}
