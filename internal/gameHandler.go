@@ -8,20 +8,26 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+// BoardSize and Connect are the size of the board and the number of pieces in a row needed to win.
 const (
-	BoardSize = 15 // Size of the board (15x15 for Connect 5)
+	BoardSize = 12 // Size of the board (15x15 for Connect 5)
 	Connect   = 5  // Number of pieces in a row needed to win
 )
 
+// GameState represents the state of a game.
 type GameState struct {
 	Board  [BoardSize][BoardSize]string
-	Turn   string // "X" or "O"
+	Turn   string // player1 or player2
 	Winner string
 }
 
+// gameStates is a map of game IDs to game states. the string will be the game ID
 var gameStates = make(map[string]*GameState)
 var gameStatesMutex = sync.Mutex{}
 
+// GameMove represents a move in a game.
+// The player is either "X" or "O". 
+// gameID will be player1-player2
 type GameMove struct {
 	GameID string `json:"gameId"`
 	Row    int    `json:"row"`
