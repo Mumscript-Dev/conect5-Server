@@ -14,6 +14,15 @@ const (
 	Connect   = 5  // Number of pieces in a row needed to win
 )
 
+// Game request state two players and whether both side has been accepted, if both accepted then gameState will be created in the map of gameStates
+type GameRequest struct {
+	Player1 string `json:"player1"`
+	Player2 string `json:"player2"`
+	Player1Accept bool `json:"player1Accept"` 
+	Player2Accept bool `json:"player2Accept"`
+}
+
+
 // GameState represents the state of a game.
 type GameState struct {
 	Board  [BoardSize][BoardSize]string
@@ -26,7 +35,7 @@ var gameStates = make(map[string]*GameState)
 var gameStatesMutex = sync.Mutex{}
 
 // GameMove represents a move in a game.
-// The player is either "X" or "O". 
+// The player is either  player1 or player2
 // gameID will be player1-player2
 type GameMove struct {
 	GameID string `json:"gameId"`
@@ -35,6 +44,7 @@ type GameMove struct {
 	Player string `json:"player"`
 }
 
+// GameHandler handles WebSocket connections for a game.
 func (app *application) GameHandler(w http.ResponseWriter, r *http.Request) {
 	ws, err := UpgradeConnection.Upgrade(w, r, nil)
 	if err != nil {
@@ -46,6 +56,7 @@ func (app *application) GameHandler(w http.ResponseWriter, r *http.Request) {
 	go app.ListenForGameMoves(ws)
 }
 
+// ListenForGameMoves listens for game moves on a WebSocket connection.
 func (app *application) ListenForGameMoves(conn *websocket.Conn) {
 	defer func() {
 		if r := recover(); r != nil {
