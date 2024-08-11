@@ -68,10 +68,6 @@ func (app *application) ChatHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	conn := websocketConnection{Conn: ws}
 
-	clientsMutex.Lock()
-	clients[conn] = payload.User
-	clientsMutex.Unlock()
-
 	go app.ListenForWs(&conn)
 }
 
@@ -116,22 +112,26 @@ func ListenForWsChan() {
 			response.Action = "chat"
 			BroadcastMessage(response)
 		case "userList":
-			userList := getUserList()
-			response.Message = fmt.Sprintf("Users in chat: %v", userList)
+			clients[e.Conn] = fmt.Sprintf("%v-%v", e.User, e.Profile)
 			response.User = e.User
-			response.UserList = userList
-			response.Profile = 0
+			userList := getUserList()
+			response.Profile = e.Profile
+			response.Message = "Server has fetched the user list"
 			response.Action = "userList"
-			BroadToUser(response)
+			response.UserList = userList
+			BroadcastToUser(response)
 		}
 	}
 }
 
-func BroadToUser(response WsJsonResponse) {
+func BroadcastToUser(response WsJsonResponse) {
+	fmt.Println(128, response.User)
 	clientsMutex.Lock()
 	defer clientsMutex.Unlock()
+	user := fmt.Sprintf("%v-%v", response.User, response.Profile)
 	for client := range clients {
-		if clients[client] == response.User {
+		fmt.Println(130, clients[client], response.User)
+		if clients[client] == user {
 			err := client.WriteJSON(response)
 			if err != nil {
 				fmt.Printf("Error in writing message to user %v", response.User)
@@ -164,5 +164,6 @@ func getUserList() []string {
 		userList = append(userList, x)
 	}
 	sort.Strings(userList)
+	fmt.Println(164, userList)
 	return userList
 }

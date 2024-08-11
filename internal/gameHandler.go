@@ -18,10 +18,9 @@ const (
 type GameRequest struct {
 	Player1 string `json:"player1"`
 	Player2 string `json:"player2"`
-	Player1Accept bool `json:"player1Accept"` 
-	Player2Accept bool `json:"player2Accept"`
+	Player1Accepted bool `json:"player1Accepted"` 
+	Player2Accepted bool `json:"player2Accepted"`
 }
-
 
 // GameState represents the state of a game.
 type GameState struct {
