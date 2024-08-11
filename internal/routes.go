@@ -10,5 +10,6 @@ func (app *application) routes() http.Handler {
 	mux := chi.NewRouter()
 	mux.Get("/", app.Home)
 	mux.Get("/chat", app.ChatHandler)
+	mux.Get("/game", app.GameHandler)
 	return mux
 }

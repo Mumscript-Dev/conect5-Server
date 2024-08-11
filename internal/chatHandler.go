@@ -104,7 +104,6 @@ func ListenForWsChan() {
 			clientsMutex.Lock()
 			clients[e.Conn] = e.User
 			clientsMutex.Unlock()
-
 			response.User = "Server"
 			response.Message = e.User + " has joined the chat"
 			response.Profile = 0
