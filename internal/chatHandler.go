@@ -81,7 +81,7 @@ func (app *application) ListenForWs(conn *websocketConnection) {
 	for {
 		err := conn.ReadJSON(&payload)
 		if err != nil {
-			app.errorLog.Printf("app can read payload because %v", err)
+			app.errorLog.Printf("app can not read payload because %v", err)
 			return
 		}
 		app.infoLog.Printf("%v send : %v ", payload.User, payload.Message)
@@ -120,6 +120,16 @@ func ListenForWsChan() {
 			response.Action = "userList"
 			response.UserList = userList
 			BroadcastToUser(response)
+		case "leave":
+			fmt.Sprintln("someone has left the chat")
+			clientsMutex.Lock()
+			delete(clients, e.Conn)
+			clientsMutex.Unlock()
+			response.Action = "leave"
+			response.Message = e.User + " has left the chat"
+			response.User = "Server"
+			response.Profile = 0
+			BroadcastMessage(response)
 		}
 	}
 }
@@ -130,7 +140,6 @@ func BroadcastToUser(response WsJsonResponse) {
 	defer clientsMutex.Unlock()
 	user := fmt.Sprintf("%v-%v", response.User, response.Profile)
 	for client := range clients {
-		fmt.Println(130, clients[client], response.User)
 		if clients[client] == user {
 			err := client.WriteJSON(response)
 			if err != nil {
