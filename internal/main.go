@@ -44,13 +44,13 @@ func main() {
 
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)	
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)	
-
 	app := &application{
 		config: cfg,
 		infoLog: infoLog,
 		errorLog: errorLog,
 		version: "1.0.0",
 	}
+	
 	
 	//starting channel to listen for websocket messages
 	go ListenForWsChan()
