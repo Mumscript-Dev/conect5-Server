@@ -8,6 +8,7 @@ require (
 )
 
 require (
+	github.com/go-chi/cors v1.2.1 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
 	golang.org/x/net v0.17.0 // indirect
 )
