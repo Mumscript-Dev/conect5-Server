@@ -17,9 +17,13 @@ func (app *application) routes() http.Handler {
 		AllowCredentials: true,
 		MaxAge: 300, // Maximum value not ignored by any of major browsers
 		}))
-	mux.Get("/", app.Home)
-	mux.Get("/chat", app.ChatHandler)
-	mux.Get("/game", app.GameHandler)
-	mux.Get("/auth", app.Auth)
+	v1Mux := chi.NewRouter()
+	mux.Mount("/v1", v1Mux)
+	v1Mux.Get("/", app.Home)
+	v1Mux.Get("/chat", app.ChatHandler)
+	v1Mux.Get("/game", app.GameHandler)
+	v1Mux.Get("/auth", app.Auth)
+	v1Mux.Get("/user", app.UserHandler)
+	// v1Mux.Post("/user", app.CreateUserHandler)
 	return mux
 }

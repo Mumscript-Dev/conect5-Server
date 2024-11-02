@@ -6,12 +6,12 @@ root = "."
 tmp_dir = "tmp"
 
 [build]
-# Just plain old shell command. You could use `make` as well.
-cmd = "go build -o ./tmp/main ./internal"
-# Binary file yields from `cmd`.
-bin = "tmp main"
-# Customize binary.
-full_bin = "STRIPE_SECRET=sk_test_51OBFOQBLektQuX4G7eiDHiCrgahwTFHE4yIVmn6LIfVzVJrclndjClcw8yLnybnzbq085X47n4dDPxYE1GmugICX00JaJMkjyz STRIPE_KEY=pk_test_51OBFOQBLektQuX4GS2oWHDCRaudfsjF2DxAKphUa1FlMc9OQnHelgMIJ8o7IHBvgg4tHIREbmDfeCRFIQBww43Xj00ReBpLtZd ./tmp/main"
+# Use go run with -race flag and list the necessary Go files
+cmd = "go run -race internal/main.go internal/routes.go internal/handlers.go internal/chatHandler.go internal/gameHandler.go internal/userHandler.go"
+# Binary is not necessary here since you're using go run, but we leave it for potential future use
+bin = ""
+# The full binary command is not required for go run, but you can set environment variables here if needed
+full_bin = "STRIPE_SECRET=sk_test_51OBFOQBLektQuX4G7eiDHiCrgahwTFHE4yIVmn6LIfVzVJrclndjClcw8yLnybnzbq085X47n4dDPxYE1GmugICX00JaJMkjyz STRIPE_KEY=pk_test_51OBFOQBLektQuX4GS2oWHDCRaudfsjF2DxAKphUa1FlMc9OQnHelgMIJ8o7IHBvgg4tHIREbmDfeCRFIQBww43Xj00ReBpLtZd go run -race internal/main.go internal/routes.go internal/handlers.go internal/chatHandler.go internal/gameHandler.go"
 # Watch these filename extensions.
 include_ext = ["go", "tpl", "tmpl", "html", "gohtml"]
 # Ignore these filename extensions or directories.
